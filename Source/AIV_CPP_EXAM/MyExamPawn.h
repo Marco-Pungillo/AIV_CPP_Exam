@@ -56,6 +56,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* PushForceAction;
@@ -66,7 +67,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void ApplyPushForce(const FInputActionValue& Value);
 	void ApplyPullForce(const FInputActionValue& Value);
-	void StopForce();
+	void StopForce(const FInputActionValue& Value);
 
 #pragma endregion
 

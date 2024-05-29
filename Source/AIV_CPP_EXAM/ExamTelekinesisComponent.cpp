@@ -19,7 +19,7 @@ void UExamTelekinesisComponent::TelekineticPush(UWorld* World, FVector StartPosi
 	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
 	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
 
-	if (ComponentToPush)
+	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
 	{
 		ComponentToPush->SetSimulatePhysics(true);
 		ComponentToPush->SetEnableGravity(false);
@@ -37,7 +37,7 @@ void UExamTelekinesisComponent::TelekineticPull(UWorld* World, FVector StartPosi
 	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
 	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
 
-	if (ComponentToPush)
+	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
 	{
 		ComponentToPush->SetSimulatePhysics(true);
 		ComponentToPush->SetEnableGravity(false);

@@ -45,9 +45,6 @@ AMyExamPawn::AMyExamPawn()
 	this->CameraBoomInstance->SetupAttachment(RootComponent);
 	this->PawnCameraInstance->SetupAttachment(this->CameraBoomInstance);
 
-	// Initialize World for raytrace porpouse
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
-	CurrentWorld = world->World();
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +52,9 @@ void AMyExamPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Initialize World for raytrace porpouse
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
+	CurrentWorld = world->World();
 
 	// I take the controller to get enhanced Input System and add mapping context
 	APlayerController* PlayerController = Cast<APlayerController>(Controller);
@@ -80,31 +80,33 @@ void AMyExamPawn::BeginPlay()
 	
 	void AMyExamPawn::Look(const FInputActionValue& Value)
 	{
-		FVector2D currentMappedDirection = Value.Get<FVector2D>();
-		FString mappedInputs = currentMappedDirection.ToString();
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, mappedInputs);
+		FVector2D CurrentMappedDirection = Value.Get<FVector2D>();
+		FString MappedInputs = CurrentMappedDirection.ToString();
+
+		this->AddControllerYawInput(CurrentMappedDirection.X);
+
+		//if (GEngine)
+		//	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("%s"), *MappedInputs));
 	}
 	
+	// I pass vectors instead of pointers because i don't need to modify the vectors and because we did it during lessons
 	void AMyExamPawn::ApplyPushForce(const FInputActionValue& Value)
-	{
-		// I pass vectors instead of pointers because i don't need to modify the vectors and we did it during lessons
-	
-		FVector ForceApplicationPosition = this->GetActorLocation() + this->GetActorForwardVector() * Capsule->GetScaledCapsuleRadius() * 1.1;
+	{	
+		FVector ForceApplicationPosition = this->PawnCameraInstance->GetComponentLocation() + this->PawnCameraInstance->GetForwardVector() * Capsule->GetScaledCapsuleRadius() * 1.1;
 		//FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
 	
-		TelekinesisComponentInstance->TelekineticPush(CurrentWorld, ForceApplicationPosition, this->GetActorForwardVector(),ECollisionChannel::ECC_WorldDynamic);
+		TelekinesisComponentInstance->TelekineticPush(CurrentWorld, ForceApplicationPosition, this->Controller->GetControlRotation().Vector() /*CameraBoomInstance->GetForwardVector()*/,ECollisionChannel::ECC_WorldDynamic);
 	}
 
 	void AMyExamPawn::ApplyPullForce(const FInputActionValue& Value)
 	{
-		FVector ForceApplicationPosition = this->GetActorLocation() + this->GetActorForwardVector() * Capsule->GetScaledCapsuleRadius() * 1.1;
+		FVector ForceApplicationPosition = this->PawnCameraInstance->GetComponentLocation() + this->PawnCameraInstance->GetForwardVector() * Capsule->GetScaledCapsuleRadius() * 1.1;
 		//FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
 
-		TelekinesisComponentInstance->TelekineticPull(CurrentWorld, ForceApplicationPosition, this->GetActorForwardVector(), ECollisionChannel::ECC_WorldDynamic);
+		TelekinesisComponentInstance->TelekineticPull(CurrentWorld, ForceApplicationPosition, this->PawnCameraInstance->GetForwardVector(), ECollisionChannel::ECC_WorldDynamic);
 	}
 
-	void AMyExamPawn::StopForce()
+	void AMyExamPawn::StopForce(const FInputActionValue& Value)
 	{
 	}
 
@@ -131,9 +133,11 @@ void AMyExamPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered,this, &AMyExamPawn::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyExamPawn::Look);
+		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyExamPawn::Jump);
 		EnhancedInputComponent->BindAction(PushForceAction, ETriggerEvent::Triggered, this, &AMyExamPawn::ApplyPushForce);
 		EnhancedInputComponent->BindAction(PushForceAction, ETriggerEvent::Completed, this, &AMyExamPawn::StopForce);
 		EnhancedInputComponent->BindAction(PullForceAction, ETriggerEvent::Triggered, this, &AMyExamPawn::ApplyPullForce);
+
 	}
 
 }

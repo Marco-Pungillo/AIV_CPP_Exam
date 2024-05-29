@@ -99,6 +99,7 @@ void UMyExamMovementComponent::MoveRight(float Input)
 	this->CurrentAccelleration = Velocity - MoveDirection;
 	this->Velocity += MoveDirection;
 	this->Velocity.Y = FMath::Clamp(this->Velocity.Y, -movementMaxSpeed, movementMaxSpeed);
+
 }
 
 const bool UMyExamMovementComponent::IsFalling()
