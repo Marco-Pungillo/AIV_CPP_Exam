@@ -15,6 +15,7 @@ class AIV_CPP_EXAM_API UMyExamMovementComponent : public UMovementComponent
 	GENERATED_BODY()
 
 public:
+#pragma region Parameters
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float movementSpeed = 200;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -25,12 +26,17 @@ public:
 	bool bIsGrounded;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector CurrentAccelleration = {0,0,0};
+
+#pragma endregion
+
+	
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* TickFunction) override;
+
+	#pragma region Translation
 	bool bCannotMoveForward = false;
 	bool bCannotMoveBackward = false;
 	bool bCannotMoveRight = false;
 	bool bCannotMoveLeft = false;
-	
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* TickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
 	void MoveForwardRight(FVector2D InputAxis);
@@ -39,5 +45,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Input);
 	UFUNCTION(BlueprintCallable)
+	#pragma endregion
 	const bool IsFalling();
+
+	#pragma region Rotation
+	UFUNCTION(BlueprintCallable)
+	void Rotate(FVector2D RotationAxis);
+
+	#pragma endregion
+
+
+
 };

@@ -107,4 +107,9 @@ const bool UMyExamMovementComponent::IsFalling()
 	return !(this->bIsGrounded);
 }
 
+void UMyExamMovementComponent::Rotate(FVector2D RotationAxis)
+{
+	UpdatedComponent->SetRelativeRotation(FRotator(0, RotationAxis.X, 0));
+}
+
 

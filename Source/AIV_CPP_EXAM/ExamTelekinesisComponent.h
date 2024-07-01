@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "DrawDebugHelpers.h"
+#include "PhysicsEngine//PhysicsConstraintComponent.h"
 #include "ExamTelekinesisComponent.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AIV_CPP_EXAM_API UExamTelekinesisComponent : public UActorComponent
@@ -16,6 +16,9 @@ class AIV_CPP_EXAM_API UExamTelekinesisComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UExamTelekinesisComponent();
+
+	UPROPERTY(EditAnywhere, Category = "Sub-Components")
+	UPhysicsConstraintComponent* Costraint;
 
 	UPROPERTY(EditAnywhere, Category = "Telekinesis Parameters")
 	float TelekinesisRange = 200;

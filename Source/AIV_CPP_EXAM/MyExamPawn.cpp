@@ -83,8 +83,9 @@ void AMyExamPawn::BeginPlay()
 		FVector2D CurrentMappedDirection = Value.Get<FVector2D>();
 		FString MappedInputs = CurrentMappedDirection.ToString();
 
-		this->AddControllerYawInput(CurrentMappedDirection.X);
-
+		this->MovementComponentInstance->Rotate(CurrentMappedDirection);
+		AddControllerYawInput(CurrentMappedDirection.X);
+		
 		//if (GEngine)
 		//	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("%s"), *MappedInputs));
 	}

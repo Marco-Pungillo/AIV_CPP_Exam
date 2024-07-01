@@ -17,17 +17,26 @@ void UExamTelekinesisComponent::TelekineticPush(UWorld* World, FVector StartPosi
 {
 	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
 	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
-	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
 
-	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+	if (TraceResult) 
 	{
-		ComponentToPush->SetSimulatePhysics(true);
-		ComponentToPush->SetEnableGravity(false);
-		FVector Force = EndPosition - StartPosition;
-		Force.Normalize();
-		Force *= TelekinesisStrenght;
-		ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+		UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
 
+		if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+		{
+			/*if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("%s"), "TELEKINETICOBJECT FOUND"));*/
+			
+			ComponentToPush->SetSimulatePhysics(true);
+			ComponentToPush->SetEnableGravity(false);
+
+			// Force Impulse
+			FVector Force = EndPosition - StartPosition;
+			Force.Normalize();
+			Force *= TelekinesisStrenght;
+			ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+
+		}
 	}
 }
 
@@ -35,17 +44,20 @@ void UExamTelekinesisComponent::TelekineticPull(UWorld* World, FVector StartPosi
 {
 	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
 	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
-	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
-
-	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+	if (TraceResult)
 	{
-		ComponentToPush->SetSimulatePhysics(true);
-		ComponentToPush->SetEnableGravity(false);
-		FVector Force = StartPosition - EndPosition;
-		Force.Normalize();
-		Force *= TelekinesisStrenght;
-		ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+		UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
 
+		if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+		{
+			ComponentToPush->SetSimulatePhysics(true);
+			ComponentToPush->SetEnableGravity(false);
+			FVector Force = StartPosition - EndPosition;
+			Force.Normalize();
+			Force *= TelekinesisStrenght;
+			ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+
+		}
 	}
 }
 
