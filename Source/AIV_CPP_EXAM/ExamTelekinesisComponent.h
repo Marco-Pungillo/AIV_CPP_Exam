@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "ITelekineticObject.h"
 
 //Utility libraries
 #include "Kismet/KismetMathLibrary.h"
@@ -26,6 +27,7 @@ public:
 	UPrimitiveComponent* TelekinesisOrigin;
 	USceneComponent* ControlledBody;
 	UCameraComponent* TelekinesisCamera;
+	IITelekineticObject* ControlledTelekineticActor;
 
 #pragma endregion
 

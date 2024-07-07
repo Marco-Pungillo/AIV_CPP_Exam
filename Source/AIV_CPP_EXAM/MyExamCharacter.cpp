@@ -14,6 +14,7 @@ AMyExamCharacter::AMyExamCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	this->TelekinesisComponentInstance = CreateDefaultSubobject<UExamTelekinesisComponent>(TEXT("TelekinesisComponent"));
+	this->Tags.Add("Player");
 
 	this->SetUpCharacterMesh();
 
@@ -39,6 +40,8 @@ void AMyExamCharacter::SetUpCharacterMesh()
 		characterMesh->SetRelativeLocation(FVector(0, 0, -80));
 		characterMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0, 0, -90)));
 	}
+
+
 }
 
 void AMyExamCharacter::SetUpCharacterCamera()
@@ -54,7 +57,6 @@ void AMyExamCharacter::SetUpCharacterCamera()
 
 	this->CameraBoomInstance->TargetArmLength = 50;
 	this->CameraBoomInstance->SocketOffset = FVector(-25, 59, 100);
-
 
 }
 
@@ -187,7 +189,6 @@ void AMyExamCharacter::ApplyPushForce(const FInputActionValue& Value)
 {
 	if (TelekinesisComponentInstance->ControlledBody) 
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Sto ricevendo l'input di push "));
 		TelekinesisComponentInstance->TelekineticPush();
 	}
 }
@@ -196,7 +197,6 @@ void AMyExamCharacter::ApplyPullForce(const FInputActionValue& Value)
 {
 	if (TelekinesisComponentInstance->ControlledBody)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Sto ricevendo l'input di pull "));
 		TelekinesisComponentInstance->TelekineticPull();
 	}
 }

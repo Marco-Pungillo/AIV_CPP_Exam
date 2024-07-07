@@ -24,29 +24,34 @@ void UExamTelekinesisComponent::ApplyTelekineticHold(UWorld* World, FVector Star
 		if (TraceResult)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Telekinetic Object Hit"));
-			ControlledBody = TraceResult->GetActor()->GetRootComponent();
-			AActor* ControlledActor = ControlledBody->GetOwner();
-
+			AActor* ControlledActor = TraceResult->GetActor();
 			if (ControlledActor)
 			{
+				ControlledBody = ControlledActor->GetRootComponent();
+				ControlledTelekineticActor = Cast<IITelekineticObject>(ControlledActor);
+				if (ControlledTelekineticActor)
+				{
+					ControlledTelekineticActor->OnObjectHold();
+				}
 				UE_LOG(LogTemp, Warning, TEXT("Actor valid"));
+				ControlledBodyOffset = ((ControlledActor->GetActorLocation()) - (GetOwner()->GetActorLocation())).Length();
 			}
 			else
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Telekinetic not Valid"));
 			}
 
-			ControlledBodyOffset = ((ControlledActor->GetActorLocation()) - (GetOwner()->GetActorLocation())).Length();
 		}
 	}
 }
 
 void UExamTelekinesisComponent::StopTelekineticHold()
 {
-	if (ControlledBody) 
+	if (ControlledBody && ControlledTelekineticActor)
 	{
+		ControlledTelekineticActor->OnObjectHoldStop();
+		ControlledTelekineticActor = nullptr;
 		ControlledBody = nullptr;
-		UE_LOG(LogTemp, Warning, TEXT("Controlled body is now null"));
 	}
 }
 
@@ -78,11 +83,11 @@ void UExamTelekinesisComponent::TelekineticPush()
 //}  
 #pragma endregion
 
-	if (ControlledBody) 
+	if (ControlledBody && ControlledTelekineticActor)
 	{
 		ControlledBodyOffset += TelekinesisStrenght;
 		ControlledBodyOffset = UKismetMathLibrary::Clamp(ControlledBodyOffset, MinControlledBodyOffset, MaxControlledBodyOffset);
-		UE_LOG(LogTemp, Warning, TEXT("Sto pushando via "));
+		ControlledTelekineticActor->OnObjectPush();
 	}
 }
 
@@ -109,10 +114,11 @@ void UExamTelekinesisComponent::TelekineticPull()
 //}  
 #pragma endregion
 
-	if (ControlledBody)
+	if (ControlledBody && ControlledTelekineticActor)
 	{
 		ControlledBodyOffset -= TelekinesisStrenght;
 		ControlledBodyOffset = UKismetMathLibrary::Clamp(ControlledBodyOffset, MinControlledBodyOffset, MaxControlledBodyOffset);
+		ControlledTelekineticActor->OnObjectPull();
 	}
 }
 
@@ -131,6 +137,7 @@ FHitResult* UExamTelekinesisComponent::TelekinesisRay(UWorld* World, FVector Sta
 	FHitResult Result;
 	FCollisionQueryParams Params;
 	FCollisionResponseParams ResponseParams;
+	
 	if (World != nullptr)
 	{
 
@@ -138,12 +145,12 @@ FHitResult* UExamTelekinesisComponent::TelekinesisRay(UWorld* World, FVector Sta
 
 		if (bHasHit) 
 		{
-			DrawDebugLine(World, StartPosition, EndPosition, FColor::Green, true, 2.f, false, 4.f);
+			DrawDebugLine(World, StartPosition, EndPosition, FColor::Green, false, 2.f, false, 4.f);
 			return &Result;
 		}
 		else 
 		{
-			DrawDebugLine(World, StartPosition, EndPosition, FColor::Blue, true, 2.f, false, 4.f);
+			DrawDebugLine(World, StartPosition, EndPosition, FColor::Blue, false, 2.f, false, 4.f);
 			return nullptr;
 		}
 	}
