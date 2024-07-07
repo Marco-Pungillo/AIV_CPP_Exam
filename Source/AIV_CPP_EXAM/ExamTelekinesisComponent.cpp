@@ -3,61 +3,116 @@
 
 #include "ExamTelekinesisComponent.h"
 
-// Sets default values for this component's properties
+
 UExamTelekinesisComponent::UExamTelekinesisComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-void UExamTelekinesisComponent::TelekineticPush(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+void UExamTelekinesisComponent::SetTelekinesisOrigin(UPrimitiveComponent* origin)
 {
-	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
-	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
+	TelekinesisOrigin = origin;
+}
 
-	if (TraceResult) 
+void UExamTelekinesisComponent::ApplyTelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+{
+	if (!ControlledBody)
 	{
-		UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
+		FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
+		FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
 
-		if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+		if (TraceResult)
 		{
-			/*if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("%s"), "TELEKINETICOBJECT FOUND"));*/
-			
-			ComponentToPush->SetSimulatePhysics(true);
-			ComponentToPush->SetEnableGravity(false);
+			UE_LOG(LogTemp, Warning, TEXT("Telekinetic Object Hit"));
+			ControlledBody = TraceResult->GetActor()->GetRootComponent();
+			AActor* ControlledActor = ControlledBody->GetOwner();
 
-			// Force Impulse
-			FVector Force = EndPosition - StartPosition;
-			Force.Normalize();
-			Force *= TelekinesisStrenght;
-			ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+			if (ControlledActor)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Actor valid"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Telekinetic not Valid"));
+			}
 
+			ControlledBodyOffset = ((ControlledActor->GetActorLocation()) - (GetOwner()->GetActorLocation())).Length();
 		}
 	}
 }
 
-void UExamTelekinesisComponent::TelekineticPull(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+void UExamTelekinesisComponent::StopTelekineticHold()
 {
-	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
-	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
-	if (TraceResult)
+	if (ControlledBody) 
 	{
-		UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
+		ControlledBody = nullptr;
+		UE_LOG(LogTemp, Warning, TEXT("Controlled body is now null"));
+	}
+}
 
-		if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
-		{
-			ComponentToPush->SetSimulatePhysics(true);
-			ComponentToPush->SetEnableGravity(false);
-			FVector Force = StartPosition - EndPosition;
-			Force.Normalize();
-			Force *= TelekinesisStrenght;
-			ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+void UExamTelekinesisComponent::TelekineticPush()
+{
+#pragma region ExternalPush
+	//FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
+//FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
 
-		}
+//if (TraceResult) 
+//{
+//	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
+
+//	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+//	{
+//		/*if (GEngine)
+//			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("%s"), "TELEKINETICOBJECT FOUND"));*/
+//		
+//		ComponentToPush->SetSimulatePhysics(true);
+//		ComponentToPush->SetEnableGravity(false);
+
+//		// Force Impulse
+//		FVector Force = EndPosition - StartPosition;
+//		Force.Normalize();
+//		Force *= TelekinesisStrenght;
+//		ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+
+//	}
+//}  
+#pragma endregion
+
+	if (ControlledBody) 
+	{
+		ControlledBodyOffset += TelekinesisStrenght;
+		ControlledBodyOffset = UKismetMathLibrary::Clamp(ControlledBodyOffset, MinControlledBodyOffset, MaxControlledBodyOffset);
+		UE_LOG(LogTemp, Warning, TEXT("Sto pushando via "));
+	}
+}
+
+void UExamTelekinesisComponent::TelekineticPull()
+{
+#pragma region ExternalPull
+
+	//FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
+//FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
+//if (TraceResult)
+//{
+//	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
+
+//	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+//	{
+//		ComponentToPush->SetSimulatePhysics(true);
+//		ComponentToPush->SetEnableGravity(false);
+//		FVector Force = StartPosition - EndPosition;
+//		Force.Normalize();
+//		Force *= TelekinesisStrenght;
+//		ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
+
+//	}
+//}  
+#pragma endregion
+
+	if (ControlledBody)
+	{
+		ControlledBodyOffset -= TelekinesisStrenght;
+		ControlledBodyOffset = UKismetMathLibrary::Clamp(ControlledBodyOffset, MinControlledBodyOffset, MaxControlledBodyOffset);
 	}
 }
 
@@ -78,16 +133,17 @@ FHitResult* UExamTelekinesisComponent::TelekinesisRay(UWorld* World, FVector Sta
 	FCollisionResponseParams ResponseParams;
 	if (World != nullptr)
 	{
-		DrawDebugLine(World, StartPosition, EndPosition, FColor::Blue, true, 2.f, false, 4.f);
 
-		bool bHasHit = World->LineTraceSingleByChannel(Result, StartPosition, EndPosition, ECollisionChannel::ECC_WorldStatic, Params);
+		bool bHasHit = World->LineTraceSingleByChannel(Result, StartPosition, EndPosition, TelekinesisChannel, Params);
 
 		if (bHasHit) 
 		{
+			DrawDebugLine(World, StartPosition, EndPosition, FColor::Green, true, 2.f, false, 4.f);
 			return &Result;
 		}
 		else 
 		{
+			DrawDebugLine(World, StartPosition, EndPosition, FColor::Blue, true, 2.f, false, 4.f);
 			return nullptr;
 		}
 	}
@@ -100,5 +156,10 @@ void UExamTelekinesisComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	if (ControlledBody && TelekinesisCamera)
+	{
+		FVector locationToReach = UKismetMathLibrary::VLerp(ControlledBody->GetOwner()->GetActorLocation(), TelekinesisOrigin->GetComponentLocation() + TelekinesisCamera->GetForwardVector() * ControlledBodyOffset, DeltaTime);
+		ControlledBody->GetOwner()->SetActorLocation(locationToReach);
+
+	}
 }

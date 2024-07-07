@@ -5,41 +5,68 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "DrawDebugHelpers.h"
-#include "PhysicsEngine//PhysicsConstraintComponent.h"
+#include "Camera/CameraComponent.h"
+
+//Utility libraries
+#include "Kismet/KismetMathLibrary.h"
+
 #include "ExamTelekinesisComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
 class AIV_CPP_EXAM_API UExamTelekinesisComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UExamTelekinesisComponent();
 
-	UPROPERTY(EditAnywhere, Category = "Sub-Components")
-	UPhysicsConstraintComponent* Costraint;
 
+#pragma region Components
+	
+	UPrimitiveComponent* TelekinesisOrigin;
+	USceneComponent* ControlledBody;
+	UCameraComponent* TelekinesisCamera;
+
+#pragma endregion
+
+#pragma region Parameters
 	UPROPERTY(EditAnywhere, Category = "Telekinesis Parameters")
 	float TelekinesisRange = 200;
 	UPROPERTY(EditAnywhere, Category = "Telekinesis Parameters")
 	float TelekinesisStrenght = 25;
+	UPROPERTY(EditAnywhere, Category = "Telekinesis Parameters")
+	float MinControlledBodyOffset;
+	UPROPERTY(EditAnywhere, Category = "Telekinesis Parameters")
+	float MaxControlledBodyOffset;
+	float ControlledBodyOffset; 
+#pragma endregion
 
 	UFUNCTION(BlueprintCallable)
-	void TelekineticPush(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+	void SetTelekinesisOrigin(UPrimitiveComponent* origin);
+
 	UFUNCTION(BlueprintCallable)
-	void TelekineticPull(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+	void ApplyTelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+
+	UFUNCTION(BlueprintCallable)
+	void StopTelekineticHold();
+
+	UFUNCTION(BlueprintCallable)
+	void TelekineticPush();
+	UFUNCTION(BlueprintCallable)
+	void TelekineticPull();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-	FHitResult* TelekinesisRay(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+	FHitResult* TelekinesisRay(UWorld* World, FVector StartPosition, FVector EndPosition, ECollisionChannel TelekinesisChannel);
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		
+
+
 };

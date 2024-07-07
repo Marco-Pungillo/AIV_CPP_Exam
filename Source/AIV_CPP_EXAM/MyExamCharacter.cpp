@@ -13,16 +13,19 @@ AMyExamCharacter::AMyExamCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	this->TelekinesisComponentInstance = CreateDefaultSubobject<UExamTelekinesisComponent>(TEXT("Telekinesis Component"));
+	this->TelekinesisComponentInstance = CreateDefaultSubobject<UExamTelekinesisComponent>(TEXT("TelekinesisComponent"));
 
 	this->SetUpCharacterMesh();
-	
+
 	this->SetUpCharacterCamera();
 
 	this->SetUpMovementParams();
+
+	this->SetUpTelekinesis();
 }
 
+
+#pragma region ComponentInitializing
 
 void AMyExamCharacter::SetUpCharacterMesh()
 {
@@ -30,7 +33,7 @@ void AMyExamCharacter::SetUpCharacterMesh()
 	FString SkeletalMeshPath = "/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'";
 	USkeletalMesh* charMesh = LoadObject<USkeletalMesh>(nullptr, *SkeletalMeshPath);
 
-	if (characterMesh)
+	if (characterMesh && charMesh)
 	{
 		characterMesh->SetSkeletalMeshAsset(charMesh);
 		characterMesh->SetRelativeLocation(FVector(0, 0, -80));
@@ -40,15 +43,33 @@ void AMyExamCharacter::SetUpCharacterMesh()
 
 void AMyExamCharacter::SetUpCharacterCamera()
 {
-	this->CharacterCameraInstance = CreateDefaultSubobject<UCameraComponent>(TEXT("Pawn Camera"));
-	this->CharacterCameraInstance->bUsePawnControlRotation = true;
 
+	this->CharacterCameraInstance = CreateDefaultSubobject<UCameraComponent>(TEXT("Pawn Camera"));
 	this->CameraBoomInstance = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
+
 	this->CameraBoomInstance->SetupAttachment(RootComponent);
 	this->CharacterCameraInstance->SetupAttachment(this->CameraBoomInstance);
 
+	this->CharacterCameraInstance->bUsePawnControlRotation = true;
+
 	this->CameraBoomInstance->TargetArmLength = 50;
 	this->CameraBoomInstance->SocketOffset = FVector(-25, 59, 100);
+
+
+}
+
+void AMyExamCharacter::SetUpTelekinesis()
+{
+	this->TelekinesisOriginInstance = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TelekinesisOrigin"));
+	FString MeshPath = "/Script/Engine.StaticMesh'/Game/Custom/MainCharacter/Materials/TelekinesisOriginCube.TelekinesisOriginCube'";
+	UStaticMesh* telekinesisOriginMesh = LoadObject<UStaticMesh>(nullptr, *MeshPath);
+	this->TelekinesisOriginInstance->SetStaticMesh(telekinesisOriginMesh);
+	this->TelekinesisOriginInstance->SetRelativeLocation(FVector(210, -40, -50));
+	this->TelekinesisOriginInstance->SetRelativeScale3D(FVector(0.2, 0.2, 0.2));
+
+	this->TelekinesisComponentInstance->SetTelekinesisOrigin(this->TelekinesisOriginInstance);
+	this->TelekinesisOriginInstance->SetupAttachment(CharacterCameraInstance);
+	this->TelekinesisComponentInstance->TelekinesisCamera = CharacterCameraInstance;
 
 }
 
@@ -56,6 +77,9 @@ void AMyExamCharacter::SetUpMovementParams()
 {
 	this->GetCharacterMovement()->JumpZVelocity = 650;
 }
+
+#pragma endregion
+
 
 // Called when the game starts or when spawned
 void AMyExamCharacter::BeginPlay()
@@ -88,7 +112,6 @@ void AMyExamCharacter::BeginPlay()
 void AMyExamCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 #pragma region InputCallbacks
@@ -120,15 +143,12 @@ void AMyExamCharacter::Look(const FInputActionValue& Value)
 
 	this->AddControllerPitchInput(CurrentMappedDirection.Y);
 
-	
+	// Remember to setup the pitch limits in the character details
 	this->AddControllerYawInput(CurrentMappedDirection.X);
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("Controller Pitch: %s"), this->GetControlRotation().Pitch));
 
 }
 
-void AMyExamCharacter::Jump(const FInputActionValue& Value)
+void AMyExamCharacter::StartJump(const FInputActionValue& Value)
 {
 	UCharacterMovementComponent* charMov = this->GetCharacterMovement();
 	charMov->DoJump(false);
@@ -136,25 +156,49 @@ void AMyExamCharacter::Jump(const FInputActionValue& Value)
 
 #pragma endregion
 
-
-
-
 #pragma region Telekinesis
 // I pass vectors instead of pointers because i don't need to modify the vectors (and because we did it during lessons)
+void AMyExamCharacter::ApplyTelekineticHold(const FInputActionValue& Value)
+{
+	FVector ForceApplicationPosition = this->TelekinesisOriginInstance->GetComponentLocation() + this->TelekinesisOriginInstance->GetForwardVector() * this->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1;
+	FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
+
+	TelekinesisComponentInstance->ApplyTelekineticHold(CurrentWorld, ForceApplicationPosition, this->TelekinesisOriginInstance->GetForwardVector(), ECollisionChannel::ECC_GameTraceChannel1);
+	
+
+
+	if (TelekinesisComponentInstance->ControlledBody) 
+	{
+		TelekinesisOriginInstance->SetMaterial(0, TargetMaterial);
+	}
+}
+
+void AMyExamCharacter::StopTelekineticHold(const FInputActionValue& Value)
+{
+	TelekinesisComponentInstance->StopTelekineticHold();
+	if (!TelekinesisComponentInstance->ControlledBody)
+	{
+		TelekinesisOriginInstance->SetMaterial(0, NoTargetMaterial);
+	}
+}
+
+
 void AMyExamCharacter::ApplyPushForce(const FInputActionValue& Value)
 {
-	FVector ForceApplicationPosition = this->CharacterCameraInstance->GetComponentLocation() + this->CharacterCameraInstance->GetForwardVector() * this->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1;
-	FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
-
-	TelekinesisComponentInstance->TelekineticPush(CurrentWorld, ForceApplicationPosition, this->CharacterCameraInstance->GetForwardVector(), ECollisionChannel::ECC_GameTraceChannel1);
+	if (TelekinesisComponentInstance->ControlledBody) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sto ricevendo l'input di push "));
+		TelekinesisComponentInstance->TelekineticPush();
+	}
 }
-//
+
 void AMyExamCharacter::ApplyPullForce(const FInputActionValue& Value)
 {
-	FVector ForceApplicationPosition = this->CharacterCameraInstance->GetComponentLocation() + this->CharacterCameraInstance->GetForwardVector() * this->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1;
-	FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
-
-	TelekinesisComponentInstance->TelekineticPull(CurrentWorld, ForceApplicationPosition, this->CharacterCameraInstance->GetForwardVector(), ECollisionChannel::ECC_GameTraceChannel1);
+	if (TelekinesisComponentInstance->ControlledBody)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sto ricevendo l'input di pull "));
+		TelekinesisComponentInstance->TelekineticPull();
+	}
 }
 
 void AMyExamCharacter::StopForce(const FInputActionValue& Value)
@@ -178,9 +222,12 @@ void AMyExamCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::Look);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::StartJump);
+
+		EnhancedInputComponent->BindAction(TelekinesisHoldAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyTelekineticHold);
+		EnhancedInputComponent->BindAction(TelekinesisStopAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::StopTelekineticHold);
+
 		EnhancedInputComponent->BindAction(PushForceAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyPushForce);
-		EnhancedInputComponent->BindAction(PushForceAction, ETriggerEvent::Completed, this, &AMyExamCharacter::StopForce);
 		EnhancedInputComponent->BindAction(PullForceAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyPullForce);
 
 	}
