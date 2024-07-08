@@ -165,6 +165,7 @@ void AMyExamCharacter::ApplyTelekineticHold(const FInputActionValue& Value)
 	FVector ForceApplicationPosition = this->TelekinesisOriginInstance->GetComponentLocation() + this->TelekinesisOriginInstance->GetForwardVector() * this->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1;
 	FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
 
+	//ECC_GameTraceChannel1 is the Telekinetic Trace Channel
 	TelekinesisComponentInstance->ApplyTelekineticHold(CurrentWorld, ForceApplicationPosition, this->TelekinesisOriginInstance->GetForwardVector(), ECollisionChannel::ECC_GameTraceChannel1);
 	
 
@@ -201,8 +202,13 @@ void AMyExamCharacter::ApplyPullForce(const FInputActionValue& Value)
 	}
 }
 
-void AMyExamCharacter::StopForce(const FInputActionValue& Value)
+void AMyExamCharacter::ApplyTelekineticImpulse(const FInputActionValue& Value)
 {
+	FVector ForceApplicationPosition = this->TelekinesisOriginInstance->GetComponentLocation() + this->TelekinesisOriginInstance->GetForwardVector() * this->GetCapsuleComponent()->GetScaledCapsuleRadius() * 1.1;
+	FVector* ForceApplicationPosPtr = &ForceApplicationPosition;
+
+	//ECC_GameTraceChannel1 is the Telekinetic Trace Channel
+	TelekinesisComponentInstance->TelekineticImpulse(CurrentWorld, ForceApplicationPosition, this->TelekinesisOriginInstance->GetForwardVector(), ECollisionChannel::ECC_GameTraceChannel1);
 }
 
 #pragma endregion
@@ -226,9 +232,11 @@ void AMyExamCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		EnhancedInputComponent->BindAction(TelekinesisHoldAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyTelekineticHold);
 		EnhancedInputComponent->BindAction(TelekinesisStopAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::StopTelekineticHold);
-
 		EnhancedInputComponent->BindAction(PushForceAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyPushForce);
 		EnhancedInputComponent->BindAction(PullForceAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyPullForce);
+
+		EnhancedInputComponent->BindAction(ImpulseAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyTelekineticImpulse);
+		//EnhancedInputComponent->BindAction(TelekinesisStopAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::StopTelekineticHold);
 
 	}
 }

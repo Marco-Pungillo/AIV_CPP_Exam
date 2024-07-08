@@ -57,31 +57,6 @@ void UExamTelekinesisComponent::StopTelekineticHold()
 
 void UExamTelekinesisComponent::TelekineticPush()
 {
-#pragma region ExternalPush
-	//FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
-//FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
-
-//if (TraceResult) 
-//{
-//	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
-
-//	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
-//	{
-//		/*if (GEngine)
-//			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, FString::Printf(TEXT("%s"), "TELEKINETICOBJECT FOUND"));*/
-//		
-//		ComponentToPush->SetSimulatePhysics(true);
-//		ComponentToPush->SetEnableGravity(false);
-
-//		// Force Impulse
-//		FVector Force = EndPosition - StartPosition;
-//		Force.Normalize();
-//		Force *= TelekinesisStrenght;
-//		ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
-
-//	}
-//}  
-#pragma endregion
 
 	if (ControlledBody && ControlledTelekineticActor)
 	{
@@ -93,33 +68,55 @@ void UExamTelekinesisComponent::TelekineticPush()
 
 void UExamTelekinesisComponent::TelekineticPull()
 {
-#pragma region ExternalPull
-
-	//FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
-//FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
-//if (TraceResult)
-//{
-//	UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
-
-//	if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
-//	{
-//		ComponentToPush->SetSimulatePhysics(true);
-//		ComponentToPush->SetEnableGravity(false);
-//		FVector Force = StartPosition - EndPosition;
-//		Force.Normalize();
-//		Force *= TelekinesisStrenght;
-//		ComponentToPush->AddForceAtLocation(Force, TraceResult->ImpactPoint);
-
-//	}
-//}  
-#pragma endregion
-
 	if (ControlledBody && ControlledTelekineticActor)
 	{
 		ControlledBodyOffset -= TelekinesisStrenght;
 		ControlledBodyOffset = UKismetMathLibrary::Clamp(ControlledBodyOffset, MinControlledBodyOffset, MaxControlledBodyOffset);
 		ControlledTelekineticActor->OnObjectPull();
 	}
+}
+
+void UExamTelekinesisComponent::TelekineticImpulse(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+{
+	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
+	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
+
+	if (TraceResult) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Telekinetic Object Hit"));
+		AActor* ControlledActor = TraceResult->GetActor();
+		if (ControlledActor)
+		{
+
+			IImpulsable* ImpulsedActor = Cast<IImpulsable>(ControlledActor);
+			if (ImpulsedActor)
+			{
+
+				UPrimitiveComponent* ComponentToPush = TraceResult->GetComponent();
+				if (ComponentToPush && (ComponentToPush->Mobility == EComponentMobility::Movable))
+				{
+					ComponentToPush->SetSimulatePhysics(true);
+					ComponentToPush->SetEnableGravity(false);
+
+					// Force Impulse
+					FVector Impulse = EndPosition - StartPosition;
+					Impulse.Normalize();
+					Impulse *= TelekinesisStrenght*TelekinesisStrenght;
+					ComponentToPush->AddImpulseAtLocation(Impulse, TraceResult->ImpactPoint);
+					ImpulsedActor->OnReceiveImpulse();
+					UE_LOG(LogTemp, Warning, TEXT("Impulse made"));
+
+				}
+
+			}
+
+		}
+	}
+}
+
+// TO-DO: INSERT GRAPPLING HOOK MECHANIC USING LAUNCH CHARACTER
+void UExamTelekinesisComponent::TelekineticLaunch()
+{
 }
 
 

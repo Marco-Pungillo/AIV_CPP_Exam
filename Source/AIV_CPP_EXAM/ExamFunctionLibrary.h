@@ -8,6 +8,7 @@
 #include "ExamSaveGame.h"
 #include "ExamFunctionLibrary.generated.h"
 
+
 UCLASS()
 class AIV_CPP_EXAM_API UExamFunctionLibrary : public UBlueprintFunctionLibrary
 {
@@ -15,7 +16,7 @@ class AIV_CPP_EXAM_API UExamFunctionLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	static bool GameSave(AActor* Actor, FString SlotName, int32 UserIndex);
+	static bool GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Offset = FVector(0,0,0));
 	UFUNCTION(BlueprintCallable)
 	static bool GameLoad(AActor* Actor, FString SlotName, int32 UserIndex);
 };

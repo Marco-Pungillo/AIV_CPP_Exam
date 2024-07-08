@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "ITelekineticObject.h"
+#include "Impulsable.h"
 
 //Utility libraries
 #include "Kismet/KismetMathLibrary.h"
@@ -46,16 +47,32 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTelekinesisOrigin(UPrimitiveComponent* origin);
 
+#pragma region Hold-Release
 	UFUNCTION(BlueprintCallable)
 	void ApplyTelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
 
 	UFUNCTION(BlueprintCallable)
 	void StopTelekineticHold();
 
+#pragma endregion
+
+#pragma region Close-Far
 	UFUNCTION(BlueprintCallable)
 	void TelekineticPush();
 	UFUNCTION(BlueprintCallable)
 	void TelekineticPull();
+
+
+#pragma endregion
+
+#pragma region ImpulseAndForces
+	UFUNCTION(BlueprintCallable)
+	void TelekineticImpulse(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+	UFUNCTION(BlueprintCallable)
+	void TelekineticLaunch();
+
+#pragma endregion
+
 
 protected:
 	// Called when the game starts

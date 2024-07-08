@@ -87,6 +87,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* PullForceAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* ImpulseAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* LaunchAction;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void StartJump(const FInputActionValue& Value);
@@ -95,7 +100,9 @@ protected:
 	void StopTelekineticHold(const FInputActionValue& Value);
 	void ApplyPushForce(const FInputActionValue& Value);
 	void ApplyPullForce(const FInputActionValue& Value);
-	void StopForce(const FInputActionValue& Value);
+
+	void ApplyTelekineticImpulse(const FInputActionValue& Value);
+	//void StopForce(const FInputActionValue& Value);
 
 	#pragma endregion
 

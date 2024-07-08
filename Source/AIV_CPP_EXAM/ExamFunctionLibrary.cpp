@@ -3,7 +3,7 @@
 
 #include "ExamFunctionLibrary.h"
 
-bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserIndex)
+bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Offset)
 {
 	USaveGame* save = UGameplayStatics::CreateSaveGameObject(UExamSaveGame::StaticClass());
 	if (save) 
@@ -11,9 +11,9 @@ bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserI
 		UExamSaveGame* SaveGameInstance = Cast<UExamSaveGame>(save);
 		if (save)
 		{
-			SaveGameInstance->PlayerLocation = Actor->GetActorLocation();
-			SaveGameInstance->PlayerRotation = Actor->GetActorRotation();
-			SaveGameInstance->PlayerScale = Actor->GetActorScale();
+			SaveGameInstance->PlayerData.PlayerLocation = Actor->GetActorLocation() + Offset;
+			SaveGameInstance->PlayerData.PlayerRotation = Actor->GetActorRotation();
+			SaveGameInstance->PlayerData.PlayerScale = Actor->GetActorScale();
 
 			UGameplayStatics::SaveGameToSlot(SaveGameInstance, SlotName, UserIndex);
 			return true;
@@ -28,9 +28,9 @@ bool UExamFunctionLibrary::GameLoad(AActor* Actor, FString SlotName, int32 UserI
 	UExamSaveGame* LoadedSave = Cast<UExamSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
 	if (LoadedSave && Actor)
 	{
-		Actor->SetActorLocation(LoadedSave->PlayerLocation);
-		Actor->SetActorRotation(LoadedSave->PlayerRotation);
-		Actor->SetActorScale3D(LoadedSave->PlayerScale);
+		Actor->SetActorLocation(LoadedSave->PlayerData.PlayerLocation);
+		Actor->SetActorRotation(LoadedSave->PlayerData.PlayerRotation);
+		Actor->SetActorScale3D(LoadedSave->PlayerData.PlayerScale);
 		return true;
 	}
 	return false;
