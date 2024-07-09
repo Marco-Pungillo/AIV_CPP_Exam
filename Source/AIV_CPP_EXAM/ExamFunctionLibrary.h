@@ -16,7 +16,7 @@ class AIV_CPP_EXAM_API UExamFunctionLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	static bool GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Offset = FVector(0,0,0));
+	static bool GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Position);
 	UFUNCTION(BlueprintCallable)
 	static bool GameLoad(AActor* Actor, FString SlotName, int32 UserIndex);
 };

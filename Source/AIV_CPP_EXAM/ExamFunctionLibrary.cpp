@@ -3,7 +3,7 @@
 
 #include "ExamFunctionLibrary.h"
 
-bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Offset)
+bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Position)
 {
 	USaveGame* save = UGameplayStatics::CreateSaveGameObject(UExamSaveGame::StaticClass());
 	if (save) 
@@ -11,7 +11,7 @@ bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserI
 		UExamSaveGame* SaveGameInstance = Cast<UExamSaveGame>(save);
 		if (save)
 		{
-			SaveGameInstance->PlayerData.PlayerLocation = Actor->GetActorLocation() + Offset;
+			SaveGameInstance->PlayerData.PlayerLocation = Position;
 			SaveGameInstance->PlayerData.PlayerRotation = Actor->GetActorRotation();
 			SaveGameInstance->PlayerData.PlayerScale = Actor->GetActorScale();
 
