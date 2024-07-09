@@ -74,6 +74,8 @@ void AMyExamCharacter::SetUpTelekinesis()
 	this->TelekinesisOriginInstance->SetupAttachment(CharacterCameraInstance);
 	this->TelekinesisComponentInstance->TelekinesisCamera = CharacterCameraInstance;
 
+	this->TelekinesisComponentInstance->SetStandardTelekinesisChannel(ECollisionChannel::ECC_GameTraceChannel1);
+
 }
 
 void AMyExamCharacter::SetUpMovementParams()
@@ -92,6 +94,7 @@ void AMyExamCharacter::BeginPlay()
 	// Initialize World for raytrace porpouse
 	FWorldContext* world = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
 	CurrentWorld = world->World();
+	this->TelekinesisComponentInstance->SetTelekinesisWorld(CurrentWorld);
 
 	// I take the controller to get enhanced Input System and add mapping context
 	APlayerController* PlayerController = Cast<APlayerController>(Controller);

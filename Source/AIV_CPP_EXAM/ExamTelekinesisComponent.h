@@ -42,10 +42,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Telekinesis Parameters")
 	float MaxControlledBodyOffset;
 	float ControlledBodyOffset; 
+
+	ECollisionChannel StandardTelekinesisChannel;
+	UWorld* CurrentWorld;
 #pragma endregion
 
 	UFUNCTION(BlueprintCallable)
 	void SetTelekinesisOrigin(UPrimitiveComponent* origin);
+
+	UFUNCTION(BlueprintCallable)
+	void SetStandardTelekinesisChannel(ECollisionChannel TelekinChannel);
+
+	void SetTelekinesisWorld(UWorld* WorldToUse);
 
 #pragma region Hold-Release
 	UFUNCTION(BlueprintCallable)

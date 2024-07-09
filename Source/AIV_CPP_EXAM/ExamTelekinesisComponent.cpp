@@ -11,7 +11,17 @@ UExamTelekinesisComponent::UExamTelekinesisComponent()
 
 void UExamTelekinesisComponent::SetTelekinesisOrigin(UPrimitiveComponent* origin)
 {
-	TelekinesisOrigin = origin;
+	this->TelekinesisOrigin = origin;
+}
+
+void UExamTelekinesisComponent::SetStandardTelekinesisChannel(ECollisionChannel TelekinChannel)
+{
+	this->StandardTelekinesisChannel = TelekinChannel;
+}
+
+void UExamTelekinesisComponent::SetTelekinesisWorld(UWorld* WorldToUse)
+{
+	this->CurrentWorld = WorldToUse;
 }
 
 void UExamTelekinesisComponent::ApplyTelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
@@ -134,7 +144,7 @@ FHitResult* UExamTelekinesisComponent::TelekinesisRay(UWorld* World, FVector Sta
 	FHitResult Result;
 	FCollisionQueryParams Params;
 	FCollisionResponseParams ResponseParams;
-	
+	UE_LOG(LogTemp, Warning, TEXT("Ray of telekinesis"));
 	if (World != nullptr)
 	{
 
@@ -165,5 +175,14 @@ void UExamTelekinesisComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 		FVector locationToReach = UKismetMathLibrary::VLerp(ControlledBody->GetOwner()->GetActorLocation(), TelekinesisOrigin->GetComponentLocation() + TelekinesisCamera->GetForwardVector() * ControlledBodyOffset, DeltaTime);
 		ControlledBody->GetOwner()->SetActorLocation(locationToReach);
 
+		FHitResult* TraceResult = TelekinesisRay(CurrentWorld, GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation() - FVector(0,0,100), StandardTelekinesisChannel);
+		if (TraceResult)
+		{
+			AActor* ControlledActor = TraceResult->GetActor();
+			if (ControlledActor && ControlledActor->GetRootComponent() == ControlledBody)
+			{
+				this->StopTelekineticHold();
+			}
+		}
 	}
 }
