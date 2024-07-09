@@ -57,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TelekinesisMaterials)
 	UMaterialInterface* TargetMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	UAnimMontage* SkillMontage;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

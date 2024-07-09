@@ -30,6 +30,7 @@ AMyExamCharacter::AMyExamCharacter()
 
 void AMyExamCharacter::SetUpCharacterMesh()
 {
+	// I initialize the mesh as the default Unreal Engine Manny, through the blueprint i change it to the Skeletal i want to use
 	USkeletalMeshComponent* characterMesh = this->GetMesh();
 	FString SkeletalMeshPath = "/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'";
 	USkeletalMesh* charMesh = LoadObject<USkeletalMesh>(nullptr, *SkeletalMeshPath);
@@ -168,7 +169,17 @@ void AMyExamCharacter::ApplyTelekineticHold(const FInputActionValue& Value)
 	//ECC_GameTraceChannel1 is the Telekinetic Trace Channel
 	TelekinesisComponentInstance->ApplyTelekineticHold(CurrentWorld, ForceApplicationPosition, this->TelekinesisOriginInstance->GetForwardVector(), ECollisionChannel::ECC_GameTraceChannel1);
 	
-
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance) 
+	{
+		float animTime = 0.1f;		//Default value in case the animation can't be played.
+		animTime = AnimInstance->Montage_Play(SkillMontage, 1.f);
+		if (animTime < 0.1f)
+		{
+			//The function returns 0 if the animation can't be played.
+			animTime = 0.1f;
+		}
+	}
 
 	if (TelekinesisComponentInstance->ControlledBody) 
 	{
