@@ -250,7 +250,6 @@ void AMyExamCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(PullForceAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyPullForce);
 
 		EnhancedInputComponent->BindAction(ImpulseAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::ApplyTelekineticImpulse);
-		//EnhancedInputComponent->BindAction(TelekinesisStopAction, ETriggerEvent::Triggered, this, &AMyExamCharacter::StopTelekineticHold);
 
 	}
 }

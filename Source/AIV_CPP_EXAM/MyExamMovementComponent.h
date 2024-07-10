@@ -14,7 +14,7 @@ class AIV_CPP_EXAM_API UMyExamMovementComponent : public UMovementComponent
 {
 	GENERATED_BODY()
 
-public:
+public: //NOT USED
 #pragma region Parameters
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float movementSpeed = 200;

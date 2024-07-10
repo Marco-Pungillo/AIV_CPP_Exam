@@ -3,7 +3,7 @@
 
 #include "MyExamMovementComponent.h"
 
-
+//NOT USED
 void UMyExamMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* TickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, TickFunction);
