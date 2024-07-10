@@ -61,13 +61,13 @@ void UMyExamMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	/*CurrentAccelleration = { 0,0,0 };*/
 }
 
-void UMyExamMovementComponent::MoveForwardRight(FVector2D InputAxis)
+void UMyExamMovementComponent::MoveForwardRight(const FVector2D InputAxis)
 {
 	MoveForward(InputAxis.X);
 	MoveRight(InputAxis.Y);
 }
 
-void UMyExamMovementComponent::MoveForward(float Input)
+void UMyExamMovementComponent::MoveForward(const float Input)
 {
 	FVector MoveDirection = UpdatedComponent->GetForwardVector() * Input * movementSpeed;
 	MoveDirection.Z = Velocity.Z;
@@ -84,7 +84,7 @@ void UMyExamMovementComponent::MoveForward(float Input)
 	this->Velocity.X = FMath::Clamp(this->Velocity.X, -movementMaxSpeed, movementMaxSpeed);
 }
 
-void UMyExamMovementComponent::MoveRight(float Input)
+void UMyExamMovementComponent::MoveRight(const float Input)
 {
 	FVector MoveDirection = UpdatedComponent->GetRightVector() * Input * movementSpeed;
 	MoveDirection.Z = Velocity.Z;

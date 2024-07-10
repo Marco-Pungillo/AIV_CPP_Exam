@@ -14,7 +14,7 @@ void UTelekineticConstraintComponent::SetTelekinesisOwner(UPrimitiveComponent* O
 	TelekinesisOwner = Owner;
 }
 
-void UTelekineticConstraintComponent::TelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+void UTelekineticConstraintComponent::TelekineticHold(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel)
 {
 	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
 	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
@@ -34,19 +34,19 @@ void UTelekineticConstraintComponent::TelekineticHold(UWorld* World, FVector Sta
 	}
 }
 
-void UTelekineticConstraintComponent::TelekineticPush(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
-{
-}
-
-void UTelekineticConstraintComponent::TelekineticPull(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
-{
-}
+//void UTelekineticConstraintComponent::TelekineticPush(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel)
+//{
+//}
+//
+//void UTelekineticConstraintComponent::TelekineticPull(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel)
+//{
+//}
 
 void UTelekineticConstraintComponent::BeginPlay()
 {
 }
 
-FHitResult* UTelekineticConstraintComponent::TelekinesisRay(UWorld* World, FVector StartPosition, FVector EndPosition, ECollisionChannel TelekinesisChannel)
+FHitResult* UTelekineticConstraintComponent::TelekinesisRay(const UWorld* World, const FVector StartPosition, const FVector EndPosition, const ECollisionChannel TelekinesisChannel)
 {
 	FHitResult Result;
 	FCollisionQueryParams Params;

@@ -22,5 +22,5 @@ class AIV_CPP_EXAM_API IImpulsable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void OnReceiveImpulse();
+	virtual void OnReceiveImpulse() const;
 };

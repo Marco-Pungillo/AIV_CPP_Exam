@@ -14,7 +14,7 @@ void UExamTelekinesisComponent::SetTelekinesisOrigin(UPrimitiveComponent* origin
 	this->TelekinesisOrigin = origin;
 }
 
-void UExamTelekinesisComponent::SetStandardTelekinesisChannel(ECollisionChannel TelekinChannel)
+void UExamTelekinesisComponent::SetStandardTelekinesisChannel(const ECollisionChannel TelekinChannel)
 {
 	this->StandardTelekinesisChannel = TelekinChannel;
 }
@@ -24,7 +24,7 @@ void UExamTelekinesisComponent::SetTelekinesisWorld(UWorld* WorldToUse)
 	this->CurrentWorld = WorldToUse;
 }
 
-void UExamTelekinesisComponent::ApplyTelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+void UExamTelekinesisComponent::ApplyTelekineticHold(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel)
 {
 	if (!ControlledBody)
 	{
@@ -86,7 +86,7 @@ void UExamTelekinesisComponent::TelekineticPull()
 	}
 }
 
-void UExamTelekinesisComponent::TelekineticImpulse(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel)
+void UExamTelekinesisComponent::TelekineticImpulse(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel)
 {
 	FVector EndPosition = StartPosition + (Direction * TelekinesisRange);
 	FHitResult* TraceResult = TelekinesisRay(World, StartPosition, EndPosition, TelekinesisChannel);
@@ -124,10 +124,10 @@ void UExamTelekinesisComponent::TelekineticImpulse(UWorld* World, FVector StartP
 	}
 }
 
-// TO-DO: INSERT GRAPPLING HOOK MECHANIC USING LAUNCH CHARACTER
-void UExamTelekinesisComponent::TelekineticLaunch()
-{
-}
+//// TO-DO: INSERT GRAPPLING HOOK MECHANIC USING LAUNCH CHARACTER
+//void UExamTelekinesisComponent::TelekineticLaunch()
+//{
+//}
 
 
 // Called when the game starts
@@ -139,7 +139,7 @@ void UExamTelekinesisComponent::BeginPlay()
 	
 }
 
-FHitResult* UExamTelekinesisComponent::TelekinesisRay(UWorld* World, FVector StartPosition, FVector EndPosition, ECollisionChannel TelekinesisChannel)
+FHitResult* UExamTelekinesisComponent::TelekinesisRay(const UWorld* World, const FVector StartPosition, const FVector EndPosition, const ECollisionChannel TelekinesisChannel)
 {
 	FHitResult Result;
 	FCollisionQueryParams Params;

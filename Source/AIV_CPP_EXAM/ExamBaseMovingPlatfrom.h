@@ -38,7 +38,7 @@ protected:
 	float MovementTimeAccumulator;
 	bool bIsWaiting = true;
 
-	void MovementBehavior(float DeltaTime);
+	void MovementBehavior(const float DeltaTime);
 	#pragma endregion
 
 

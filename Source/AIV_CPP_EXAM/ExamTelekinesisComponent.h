@@ -47,17 +47,21 @@ public:
 	UWorld* CurrentWorld;
 #pragma endregion
 
+#pragma region Setters
+
 	UFUNCTION(BlueprintCallable)
 	void SetTelekinesisOrigin(UPrimitiveComponent* origin);
 
 	UFUNCTION(BlueprintCallable)
-	void SetStandardTelekinesisChannel(ECollisionChannel TelekinChannel);
+	void SetStandardTelekinesisChannel(const ECollisionChannel TelekinChannel);
 
 	void SetTelekinesisWorld(UWorld* WorldToUse);
+#pragma endregion
+
 
 #pragma region Hold-Release
 	UFUNCTION(BlueprintCallable)
-	void ApplyTelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+	void ApplyTelekineticHold(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel);
 
 	UFUNCTION(BlueprintCallable)
 	void StopTelekineticHold();
@@ -75,9 +79,9 @@ public:
 
 #pragma region ImpulseAndForces
 	UFUNCTION(BlueprintCallable)
-	void TelekineticImpulse(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
-	UFUNCTION(BlueprintCallable)
-	void TelekineticLaunch();
+	void TelekineticImpulse(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel);
+	//UFUNCTION(BlueprintCallable)
+	//void TelekineticLaunch();
 
 #pragma endregion
 
@@ -87,7 +91,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	FHitResult* TelekinesisRay(UWorld* World, FVector StartPosition, FVector EndPosition, ECollisionChannel TelekinesisChannel);
+	FHitResult* TelekinesisRay(const UWorld* World, const FVector StartPosition, const FVector EndPosition, const ECollisionChannel TelekinesisChannel);
 
 public:	
 	// Called every frame

@@ -23,10 +23,6 @@ public:
 	// Sets default values for this actor's properties
 	AVictoryTrigger();
 
-	void SetUpTexts();
-
-	void SetUpTrigger();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trigger")
 	UBoxComponent* TriggerVolume;
 
@@ -43,6 +39,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void SetUpTexts();
+
+	void SetUpTrigger();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

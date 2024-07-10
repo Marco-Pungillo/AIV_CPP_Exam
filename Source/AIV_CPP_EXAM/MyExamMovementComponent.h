@@ -39,11 +39,11 @@ public: //NOT USED
 	bool bCannotMoveLeft = false;
 
 	UFUNCTION(BlueprintCallable)
-	void MoveForwardRight(FVector2D InputAxis);
+	void MoveForwardRight(const FVector2D InputAxis);
 	UFUNCTION(BlueprintCallable)
-	void MoveForward(float Input);
+	void MoveForward(const float Input);
 	UFUNCTION(BlueprintCallable)
-	void MoveRight(float Input);
+	void MoveRight(const float Input);
 	UFUNCTION(BlueprintCallable)
 	#pragma endregion
 	const bool IsFalling();

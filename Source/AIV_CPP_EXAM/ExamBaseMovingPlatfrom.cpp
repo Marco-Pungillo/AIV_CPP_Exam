@@ -33,7 +33,7 @@ void AExamBaseMovingPlatfrom::Tick(float DeltaTime)
 	MovementBehavior(DeltaTime);
 }
 
-void AExamBaseMovingPlatfrom::MovementBehavior(float DeltaTime)
+void AExamBaseMovingPlatfrom::MovementBehavior(const float DeltaTime)
 {
 	// Wait Status
 	if (bIsWaiting)

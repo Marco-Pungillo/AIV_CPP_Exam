@@ -16,5 +16,5 @@ class AIV_CPP_EXAM_API AImpulsableTelekineticObject : public ATelekineticActor, 
 	GENERATED_BODY()
 	
 public:
-	virtual void OnReceiveImpulse() override;
+	virtual void OnReceiveImpulse() const override;
 };

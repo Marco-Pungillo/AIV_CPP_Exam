@@ -5,6 +5,6 @@
 
 // Add default functionality here for any IImpulsable functions that are not pure virtual.
 
-void IImpulsable::OnReceiveImpulse()
+void IImpulsable::OnReceiveImpulse() const
 {
 }

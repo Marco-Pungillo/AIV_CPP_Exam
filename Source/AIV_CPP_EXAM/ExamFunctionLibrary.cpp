@@ -3,7 +3,7 @@
 
 #include "ExamFunctionLibrary.h"
 
-bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserIndex, FVector Position)
+bool UExamFunctionLibrary::GameSave(const AActor* Actor, const FString SlotName, const int32 UserIndex, const FVector Position)
 {
 	USaveGame* save = UGameplayStatics::CreateSaveGameObject(UExamSaveGame::StaticClass());
 	if (save) 
@@ -23,7 +23,7 @@ bool UExamFunctionLibrary::GameSave(AActor* Actor, FString SlotName, int32 UserI
 	return false;
 }
 
-bool UExamFunctionLibrary::GameLoad(AActor* Actor, FString SlotName, int32 UserIndex)
+bool UExamFunctionLibrary::GameLoad(AActor* Actor, const FString SlotName, const int32 UserIndex)
 {
 	UExamSaveGame* LoadedSave = Cast<UExamSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
 	if (LoadedSave && Actor)

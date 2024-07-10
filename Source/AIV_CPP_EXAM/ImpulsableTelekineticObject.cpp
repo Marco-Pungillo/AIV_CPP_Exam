@@ -3,6 +3,6 @@
 
 #include "ImpulsableTelekineticObject.h"
 
-void AImpulsableTelekineticObject::OnReceiveImpulse()
+void AImpulsableTelekineticObject::OnReceiveImpulse() const
 {
 }

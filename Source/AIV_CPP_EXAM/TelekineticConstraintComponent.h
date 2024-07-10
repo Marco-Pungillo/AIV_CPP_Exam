@@ -27,11 +27,11 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	void TelekineticHold(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
-	UFUNCTION(BlueprintCallable)
-	void TelekineticPush(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
-	UFUNCTION(BlueprintCallable)
-	void TelekineticPull(UWorld* World, FVector StartPosition, FVector Direction, ECollisionChannel TelekinesisChannel);
+	void TelekineticHold(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel);
+	//UFUNCTION(BlueprintCallable)
+	//void TelekineticPush(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel);
+	//UFUNCTION(BlueprintCallable)
+	//void TelekineticPull(const UWorld* World, const FVector StartPosition, const FVector Direction, const ECollisionChannel TelekinesisChannel);
 
 protected:
 	UPrimitiveComponent* TelekinesisOwner;
@@ -40,7 +40,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	FHitResult* TelekinesisRay(UWorld* World, FVector StartPosition, FVector EndPosition, ECollisionChannel TelekinesisChannel);
+	FHitResult* TelekinesisRay(const UWorld* World, const FVector StartPosition, const FVector EndPosition, const ECollisionChannel TelekinesisChannel);
 
 public:
 	// Called every frame
